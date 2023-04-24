@@ -1,0 +1,58 @@
+.title {
+  margin: 20px 0;
+
+  text-align: center;
+}
+
+.main {
+  min-height: calc(100vh - 80px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+
+  text-align: center;
+
+  &__description {
+    width: 450px;
+  }
+}
+
+.services {
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+}
+
+.reviews {
+  margin-top: 150px;
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  &__item {
+    width: 500px;
+
+    .item {
+      &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      &__info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+    }
+  }
+}
