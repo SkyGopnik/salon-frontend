@@ -1,11 +1,17 @@
-import { ReactNode } from "react";
+import axios from "axios";
+import React, { ReactNode } from "react";
 
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
+import { Providers } from "src/components/Providers";
+import SetupClient from "src/components/SetupClient";
+
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 
 import "src/style/index.scss";
+
+axios.defaults.baseURL = "http://localhost:6713/";
 
 export default function RootLayout({
   children
@@ -20,7 +26,10 @@ export default function RootLayout({
         */}
       <head />
       <body>
-        {children}
+        <Providers>
+          {children}
+          <SetupClient />
+        </Providers>
       </body>
     </html>
   );

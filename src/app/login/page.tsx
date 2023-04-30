@@ -1,28 +1,66 @@
 "use client";
 
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import * as React from "react";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { setToken } from "src/functions/token";
 
 const theme = createTheme();
 
 export default function SignInPage() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+  const router = useRouter();
+
+  const [form, setForm] = useState<{ [key: string]: string }>({
+    email: "",
+    password: ""
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
+
+    const newForm = { ...form };
+
+    newForm[name] = value;
+
+    setForm(newForm);
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const {
+      email,
+      password
+    } = form;
+
+    if (
+      !email
+      || !password
+    ) {
+      return;
+    }
+
+    try {
+      const { data } = await axios.post("/auth/login", form);
+
+      setToken(data.token);
+
+      router.push("/admin");
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -32,12 +70,12 @@ export default function SignInPage() {
         <Box
           sx={{
             marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center"
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
@@ -53,6 +91,7 @@ export default function SignInPage() {
               name="email"
               autoComplete="email"
               autoFocus
+              onChange={handleInputChange}
             />
             <TextField
               margin="normal"
@@ -63,6 +102,7 @@ export default function SignInPage() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={handleInputChange}
             />
             <Button
               type="submit"
