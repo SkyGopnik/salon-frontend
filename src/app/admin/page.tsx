@@ -2,9 +2,11 @@
 
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import React from "react";
+import React, { useState } from "react";
 import Container from "@mui/material/Container";
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import CreateSaloonModel from "src/modals/CreateSaloon";
+import { Saloon } from "src/types/saloon";
 
 import style from "./page.module.scss";
 
@@ -28,57 +30,71 @@ const rows = [
 
 export default function AdminMain() {
 
-  const createSaloon = () => {
-    //
-  };
+  const [saloon, setSaloon] = useState<{
+    isOpen: boolean,
+    data?: Saloon
+  }>({
+    isOpen: false
+  });
 
   return (
-    <Container className={style.page}>
-      <Grid
-        container
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Typography style={{ padding: "16px 0" }} variant="h6" component="div">
-          Список салонов
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={createSaloon}
+    <>
+      <Container className={style.page}>
+        <Grid
+          container
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
         >
-          Создать
-        </Button>
-      </Grid>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Название</TableCell>
-              <TableCell align="center">Описание</TableCell>
-              <TableCell align="right">Действия</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.name}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell align="center">{row.calories}</TableCell>
-                <TableCell align="right">
-                  <Button color="success">Перейти</Button>
-                  <Button>Изменить</Button>
-                  <Button color="error">Удалить</Button>
-                </TableCell>
+          <Typography style={{ padding: "16px 0" }} variant="h6" component="div">
+            Список салонов
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => setSaloon({
+              isOpen: true
+            })}
+          >
+            Создать
+          </Button>
+        </Grid>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Название</TableCell>
+                <TableCell align="center">Описание</TableCell>
+                <TableCell align="right">Действия</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Container>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow
+                  key={row.name}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.name}
+                  </TableCell>
+                  <TableCell align="center">{row.calories}</TableCell>
+                  <TableCell align="right">
+                    <Button color="success">Перейти</Button>
+                    <Button>Изменить</Button>
+                    <Button color="error">Удалить</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Container>
+      <CreateSaloonModel
+        data={saloon.data}
+        opened={saloon.isOpen}
+        onClose={() => setSaloon({
+          isOpen: false
+        })}
+      />
+    </>
   );
 }
