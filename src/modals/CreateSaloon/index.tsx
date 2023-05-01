@@ -1,9 +1,9 @@
-import { Modal } from "@mui/base";
-import { Button } from "@mui/material";
+import { Button, Modal } from "@mui/material";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Saloon } from "src/types/saloon";
 
 import style from "./index.module.scss";
@@ -20,9 +20,43 @@ export default function CreateSaloonModel({ data, opened, onClose }: IProps) {
     description: ""
   });
 
+  const isEdit = !!data;
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    setForm({
+      name: data.name,
+      description: data.description
+    });
+  }, [data]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const { name, description } = form;
+
+    console.log(form);
+
+    if (!name || !description) {
+      return;
+    }
+
+    if (!isEdit) {
+      await axios.post("/saloons", {
+        name,
+        description
+      });
+    } else  {
+      await axios.put("/saloons/" + data.id, {
+        name,
+        description
+      });
+    }
+
+    modalClose();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,6 +68,15 @@ export default function CreateSaloonModel({ data, opened, onClose }: IProps) {
     };
 
     setForm(newForm);
+  };
+
+  const modalClose = () => {
+    setForm({
+      name: "",
+      description: ""
+    });
+
+    onClose();
   };
 
   const modalStyle = {
@@ -48,12 +91,10 @@ export default function CreateSaloonModel({ data, opened, onClose }: IProps) {
     pb: 3
   };
 
-  const isEdit = !!data;
-
   return (
     <Modal
       open={opened}
-      onClose={onClose}
+      onClose={modalClose}
     >
       <Box className={style.modal} component="form" sx={modalStyle} onSubmit={handleSubmit}>
         <Typography variant="h6">
@@ -75,7 +116,11 @@ export default function CreateSaloonModel({ data, opened, onClose }: IProps) {
             onChange={handleInputChange}
           />
         </div>
-        <Button className={style.action} variant="contained">
+        <Button
+          className={style.action}
+          type="submit"
+          variant="contained"
+        >
           {isEdit ? "Изменить" : "Создать"}
         </Button>
       </Box>

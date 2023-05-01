@@ -2,7 +2,9 @@
 
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import React, { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import Container from "@mui/material/Container";
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import CreateSaloonModel from "src/modals/CreateSaloon";
@@ -10,32 +12,48 @@ import { Saloon } from "src/types/saloon";
 
 import style from "./page.module.scss";
 
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number
-) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9)
-];
-
 export default function AdminMain() {
 
-  const [saloon, setSaloon] = useState<{
+  const router = useRouter();
+
+  const [saloons, setSaloons] = useState<Array<Saloon>>();
+
+  const [createSaloon, setCreateSaloon] = useState<{
     isOpen: boolean,
     data?: Saloon
   }>({
     isOpen: false
   });
+
+  useEffect(() => {
+    fetchSaloons().catch((err) => console.log(err));
+  }, []);
+
+  const fetchSaloons = async () => {
+    const { data } = await axios.get("/saloons");
+
+    setSaloons(data);
+  };
+
+  const createSaloonClose = async () => {
+    await fetchSaloons();
+
+    setCreateSaloon({
+      isOpen: false
+    });
+  };
+
+  const deleteSaloon = async (saloon: Saloon) => {
+    const result = confirm("Вы уверены что хотитет удалить салон - " + saloon.name);
+
+    if (!result) {
+      return;
+    }
+
+    await axios.delete("/saloons/" + saloon.id);
+
+    await fetchSaloons();
+  };
 
   return (
     <>
@@ -51,7 +69,7 @@ export default function AdminMain() {
           </Typography>
           <Button
             variant="contained"
-            onClick={() => setSaloon({
+            onClick={() => setCreateSaloon({
               isOpen: true
             })}
           >
@@ -68,19 +86,26 @@ export default function AdminMain() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {saloons && saloons.map((item) => (
                 <TableRow
-                  key={row.name}
+                  key={item.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    {row.name}
+                    {item.name}
                   </TableCell>
-                  <TableCell align="center">{row.calories}</TableCell>
+                  <TableCell align="center">{item.description}</TableCell>
                   <TableCell align="right">
-                    <Button color="success">Перейти</Button>
-                    <Button>Изменить</Button>
-                    <Button color="error">Удалить</Button>
+                    <Button color="success" onClick={() => router.push("/admin/" + item.id)}>Перейти</Button>
+                    <Button
+                      onClick={() => setCreateSaloon({
+                        isOpen: true,
+                        data: item
+                      })}
+                    >
+                      Изменить
+                    </Button>
+                    <Button color="error" onClick={() => deleteSaloon(item)}>Удалить</Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -89,11 +114,9 @@ export default function AdminMain() {
         </TableContainer>
       </Container>
       <CreateSaloonModel
-        data={saloon.data}
-        opened={saloon.isOpen}
-        onClose={() => setSaloon({
-          isOpen: false
-        })}
+        data={createSaloon.data}
+        opened={createSaloon.isOpen}
+        onClose={createSaloonClose}
       />
     </>
   );
