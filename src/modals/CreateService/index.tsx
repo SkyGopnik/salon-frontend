@@ -4,20 +4,24 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Saloon } from "src/types/saloon";
+import { Service } from "src/types/service";
 
 import style from "./index.module.scss";
 
 interface IProps {
-  data?: Saloon,
+  saloonId: string | number,
+  data?: Service,
   opened: boolean,
   onClose(): void
 }
-export default function CreateSaloonModal({ data, opened, onClose }: IProps) {
+
+export default function CreateServiceModal({ saloonId, data, opened, onClose }: IProps) {
 
   const [form, setForm] = useState({
     name: "",
-    description: ""
+    subName: "",
+    description: "",
+    price: ""
   });
 
   const isEdit = !!data;
@@ -28,32 +32,30 @@ export default function CreateSaloonModal({ data, opened, onClose }: IProps) {
     }
 
     setForm({
-      name: data.name,
-      description: data.description
+      ...data
     });
   }, [data]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { name, description } = form;
+    const { name, description, price } = form;
 
-    console.log(form);
-
-    if (!name || !description) {
+    if (!name || !description || !price) {
       return;
     }
 
+    const formData = {
+      name,
+      subName: form.subName ? form.subName : undefined,
+      description,
+      price
+    };
+
     if (!isEdit) {
-      await axios.post("/saloons", {
-        name,
-        description
-      });
+      await axios.post("/services/" + saloonId, formData);
     } else  {
-      await axios.put("/saloons/" + data.id, {
-        name,
-        description
-      });
+      await axios.put(`/services/${saloonId}/${data.id}`, formData);
     }
 
     modalClose();
@@ -73,7 +75,9 @@ export default function CreateSaloonModal({ data, opened, onClose }: IProps) {
   const modalClose = () => {
     setForm({
       name: "",
-      description: ""
+      subName: "",
+      description: "",
+      price: ""
     });
 
     onClose();
@@ -98,7 +102,7 @@ export default function CreateSaloonModal({ data, opened, onClose }: IProps) {
     >
       <Box className={style.modal} component="form" sx={modalStyle} onSubmit={handleSubmit}>
         <Typography variant="h6">
-          {isEdit ? "Изменение" : "Создание"} салона
+          {isEdit ? "Изменение" : "Создание"} услуги
         </Typography>
         <div className={style.form}>
           <TextField
@@ -109,10 +113,25 @@ export default function CreateSaloonModal({ data, opened, onClose }: IProps) {
             onChange={handleInputChange}
           />
           <TextField
+            label="Подназвание"
+            name="subName"
+            value={form.subName}
+            variant="standard"
+            onChange={handleInputChange}
+          />
+          <TextField
             name="description"
             label="Описание"
             variant="standard"
             value={form.description}
+            onChange={handleInputChange}
+          />
+          <TextField
+            name="price"
+            type="number"
+            label="Стоимость"
+            variant="standard"
+            value={form.price}
             onChange={handleInputChange}
           />
         </div>
