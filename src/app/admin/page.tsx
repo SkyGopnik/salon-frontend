@@ -96,7 +96,8 @@ export default function AdminMain() {
                   </TableCell>
                   <TableCell align="center">{item.description}</TableCell>
                   <TableCell align="right">
-                    <Button color="success" onClick={() => router.push("/admin/" + item.id)}>Перейти</Button>
+                    <Button color="success" onClick={() => router.push("/landing/" + item.id)}>Магазин</Button>
+                    <Button color="success" onClick={() => router.push("/admin/" + item.id)}>Настройки</Button>
                     <Button
                       onClick={() => setCreateSaloon({
                         isOpen: true,
