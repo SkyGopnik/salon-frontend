@@ -1,9 +1,11 @@
+import { useMenu } from "@mui/base";
 import { Button, FormControl, InputLabel, MenuItem, Modal, Select } from "@mui/material";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import moment from "moment";
+import React, { useEffect, useMemo, useState } from "react";
 import { Service } from "src/types/service";
 
 import style from "./index.module.scss";
@@ -18,23 +20,28 @@ interface IProps {
 
 export default function CreateRequestModal({ saloonId, data, opened, services, onClose }: IProps) {
 
+  const [busyTime, setBusyTime] = useState<Array<string>>();
+
   const [form, setForm] = useState<{
     firstName: string,
     lastName: string,
     phone: string,
+    time: string,
     serviceId: string
   }>({
     firstName: "",
     lastName: "",
     phone: "",
+    time: "",
     serviceId: ""
   });
 
   useEffect(() => {
-    console.log(data);
     if (!data) {
       return;
     }
+
+    fetchTimes(data.id).catch((err) => console.log(err));
 
     setForm({
       ...form,
@@ -42,12 +49,18 @@ export default function CreateRequestModal({ saloonId, data, opened, services, o
     });
   }, [data]);
 
+  const fetchTimes = async (serviceId: number) => {
+    const requestTime = await axios.get(`/requests/time/${saloonId}/${serviceId}`);
+
+    setBusyTime(requestTime.data.map((item: { time: string }) => moment(item.time).format("HH:mm")));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { firstName, lastName, phone, serviceId } = form;
+    const { firstName, lastName, phone, serviceId, time } = form;
 
-    if (!firstName || !lastName || !phone || !serviceId) {
+    if (!firstName || !lastName || !phone || !serviceId || !time) {
       return;
     }
 
@@ -55,6 +68,7 @@ export default function CreateRequestModal({ saloonId, data, opened, services, o
       firstName,
       lastName,
       phone,
+      time,
       serviceId
     };
 
@@ -79,11 +93,26 @@ export default function CreateRequestModal({ saloonId, data, opened, services, o
       firstName: "",
       lastName: "",
       phone: "",
+      time: "",
       serviceId: ""
     });
 
     onClose(isSuccess);
   };
+
+  const validRequestTime = useMemo(() => {
+    const times = [];
+
+    for (let i = 0; i < 18; i++) {
+      const time = moment().startOf("day").add(9, "hours").add(30 * i, "minutes").format("HH:mm");
+
+      if (busyTime?.indexOf(time) === -1) {
+        times.push(time);
+      }
+    }
+
+    return times;
+  }, [opened, busyTime]);
 
   const modalStyle = {
     position: "absolute",
@@ -128,6 +157,7 @@ export default function CreateRequestModal({ saloonId, data, opened, services, o
             value={form.phone}
             onChange={handleInputChange}
           />
+          <br />
           <FormControl fullWidth>
             <InputLabel id="service-select-label">Услуга</InputLabel>
             <Select
@@ -142,6 +172,28 @@ export default function CreateRequestModal({ saloonId, data, opened, services, o
               {services.map((item) => (
                 <MenuItem key={item.id} value={item.id}>
                   {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel id="time-select-label">Время</InputLabel>
+            <Select
+              labelId="time-select-label"
+              value={form.time}
+              label="Время"
+              onChange={(e) => {
+                fetchTimes(+form.serviceId).catch((err) => console.log(err));
+
+                setForm({
+                  ...form,
+                  time: e.target.value as string
+                });
+              }}
+            >
+              {validRequestTime.map((time) => (
+                <MenuItem key={time} value={time}>
+                  {time}
                 </MenuItem>
               ))}
             </Select>

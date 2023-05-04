@@ -3,6 +3,7 @@
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { RequestI } from "src/types/request";
@@ -12,7 +13,6 @@ export default function SaloonMainPage({ params }: {
     saloonId: string
   }
 }) {
-
   const [requests, setRequests] = useState<Array<RequestI>>();
 
   useEffect(() => {
@@ -56,6 +56,7 @@ export default function SaloonMainPage({ params }: {
               <TableCell>ФИ</TableCell>
               <TableCell align="center">Номер телефона</TableCell>
               <TableCell align="center">Услуга</TableCell>
+              <TableCell align="center">Время</TableCell>
               <TableCell align="right">Действия</TableCell>
             </TableRow>
           </TableHead>
@@ -76,6 +77,7 @@ export default function SaloonMainPage({ params }: {
                     </>
                   )}
                 </TableCell>
+                <TableCell align="center"><b>{moment(item.time).format("HH:mm")}</b> {moment(item.time).format("DD.MM.YYYY")}</TableCell>
                 <TableCell align="right">
                   <Button color="error" onClick={() => deleteRequest(item)}>Удалить</Button>
                 </TableCell>

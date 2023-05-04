@@ -5,7 +5,9 @@ export interface RequestI {
   firstName: string,
   lastName: string,
   phone: string,
+  time: string,
   serviceId: number,
   saloonId: number,
-  service?: Service
+  service?: Service,
+  createdAt: string
 }
