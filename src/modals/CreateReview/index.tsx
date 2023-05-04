@@ -106,7 +106,7 @@ export default function CreateReviewModal({ saloonId, data, opened, onClose }: I
     >
       <Box className={style.modal} component="form" sx={modalStyle} onSubmit={handleSubmit}>
         <Typography variant="h6">
-          {isEdit ? "Изменение" : "Создание"} услуги
+          {isEdit ? "Изменение" : "Создание"} отзыва
         </Typography>
         <div className={style.form}>
           <TextField
