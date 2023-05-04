@@ -29,7 +29,7 @@ export default function AdminHeader() {
             variant="h6"
             noWrap
             component="a"
-            href="/"
+            href="/admin"
             sx={{
               fontFamily: "monospace",
               fontWeight: 700,
