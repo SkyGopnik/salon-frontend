@@ -106,7 +106,7 @@ export default function CreateRequestModal({ saloonId, data, opened, services, o
     for (let i = 0; i < 18; i++) {
       const time = moment().startOf("day").add(9, "hours").add(30 * i, "minutes").format("HH:mm");
 
-      if (busyTime?.indexOf(time) === -1) {
+      if (!busyTime || busyTime?.indexOf(time) === -1) {
         times.push(time);
       }
     }
