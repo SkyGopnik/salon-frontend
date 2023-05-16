@@ -120,9 +120,7 @@ export default function CreateRequestModal({ saloonId, data, opened, services, o
             return;
           }
 
-          const duration = tempTime.diff(moment(item.time).add(item.service.duration, "minutes"));
-
-          if (duration < 0) {
+          if (tempTime.isSame(moment(item.time)) || tempTime.isBetween(moment(item.time), moment(item.time).add(item.service.duration, "minutes"))) {
             insert = false;
           }
         });
