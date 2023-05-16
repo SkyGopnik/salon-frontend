@@ -20,7 +20,10 @@ interface IProps {
 
 export default function CreateRequestModal({ saloonId, data, opened, services, onClose }: IProps) {
 
-  const [busyTime, setBusyTime] = useState<Array<string>>();
+  const [busyTime, setBusyTime] = useState<Array<{
+    time: string,
+    service: Service
+  }>>();
 
   const [form, setForm] = useState<{
     firstName: string,
@@ -41,7 +44,7 @@ export default function CreateRequestModal({ saloonId, data, opened, services, o
       return;
     }
 
-    fetchTimes(data.id).catch((err) => console.log(err));
+    fetchTimes().catch((err) => console.log(err));
 
     setForm({
       ...form,
@@ -49,10 +52,10 @@ export default function CreateRequestModal({ saloonId, data, opened, services, o
     });
   }, [data]);
 
-  const fetchTimes = async (serviceId: number) => {
-    const requestTime = await axios.get(`/requests/time/${saloonId}/${serviceId}`);
+  const fetchTimes = async () => {
+    const requestTime = await axios.get(`/requests/time/${saloonId}`);
 
-    setBusyTime(requestTime.data.map((item: { time: string }) => moment(item.time).format("HH:mm")));
+    setBusyTime(requestTime.data);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -103,11 +106,30 @@ export default function CreateRequestModal({ saloonId, data, opened, services, o
   const validRequestTime = useMemo(() => {
     const times = [];
 
-    for (let i = 0; i < 18; i++) {
-      const time = moment().startOf("day").add(9, "hours").add(30 * i, "minutes").format("HH:mm");
+    for (let i = 0; i < 7; i++) {
+      for (let j = 0; j < 18; j++) {
+        const tempTime = moment().startOf("day").add(i, "days").add(9, "hours").add(30 * j, "minutes");
 
-      if (!busyTime || busyTime?.indexOf(time) === -1) {
-        times.push(time);
+        let insert = true;
+
+        busyTime?.forEach((item) => {
+          const startDay = moment(item.time).startOf("day");
+          const endDay = moment(item.time).endOf("day");
+
+          if (!tempTime.isBetween(startDay, endDay)) {
+            return;
+          }
+
+          const duration = tempTime.diff(moment(item.time).add(item.service.duration, "minutes"));
+
+          if (duration < 0) {
+            insert = false;
+          }
+        });
+
+        if (insert) {
+          times.push(tempTime.format("HH:mm DD.MM"));
+        }
       }
     }
 
@@ -183,7 +205,7 @@ export default function CreateRequestModal({ saloonId, data, opened, services, o
               value={form.time}
               label="Время"
               onChange={(e) => {
-                fetchTimes(+form.serviceId).catch((err) => console.log(err));
+                fetchTimes().catch((err) => console.log(err));
 
                 setForm({
                   ...form,

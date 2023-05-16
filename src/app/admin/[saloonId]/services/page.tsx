@@ -82,6 +82,7 @@ export default function SaloonServicesPage({ params }: {
               <TableCell align="center">Подназвание</TableCell>
               <TableCell align="center">Описание</TableCell>
               <TableCell align="center">Стоимость</TableCell>
+              <TableCell align="center">Длительность</TableCell>
               <TableCell align="right">Действия</TableCell>
             </TableRow>
           </TableHead>
@@ -97,6 +98,7 @@ export default function SaloonServicesPage({ params }: {
                 <TableCell align="center">{item.subName ? item.subName : "Отсутствует"}</TableCell>
                 <TableCell align="center">{item.description}</TableCell>
                 <TableCell align="center">{item.price} руб.</TableCell>
+                <TableCell align="center">{item.duration} минут</TableCell>
                 <TableCell align="right">
                   <Button
                     onClick={() => setCreateService({

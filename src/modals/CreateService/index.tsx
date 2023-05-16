@@ -21,7 +21,8 @@ export default function CreateServiceModal({ saloonId, data, opened, onClose }: 
     name: "",
     subName: "",
     description: "",
-    price: ""
+    price: "",
+    duration: ""
   });
 
   const isEdit = !!data;
@@ -39,9 +40,9 @@ export default function CreateServiceModal({ saloonId, data, opened, onClose }: 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { name, description, price } = form;
+    const { name, description, price, duration } = form;
 
-    if (!name || !description || !price) {
+    if (!name || !description || !price || !duration) {
       return;
     }
 
@@ -49,7 +50,8 @@ export default function CreateServiceModal({ saloonId, data, opened, onClose }: 
       name,
       subName: form.subName ? form.subName : undefined,
       description,
-      price
+      price,
+      duration
     };
 
     if (!isEdit) {
@@ -77,7 +79,8 @@ export default function CreateServiceModal({ saloonId, data, opened, onClose }: 
       name: "",
       subName: "",
       description: "",
-      price: ""
+      price: "",
+      duration: ""
     });
 
     onClose();
@@ -132,6 +135,14 @@ export default function CreateServiceModal({ saloonId, data, opened, onClose }: 
             label="Стоимость"
             variant="standard"
             value={form.price}
+            onChange={handleInputChange}
+          />
+          <TextField
+            name="duration"
+            type="number"
+            label="Длительность (мин)"
+            variant="standard"
+            value={form.duration}
             onChange={handleInputChange}
           />
         </div>

@@ -112,6 +112,9 @@ export default function LandingPage({ params }: {
                     {item.description}
                   </Typography>
                   <Typography variant="body2">
+                    {item.duration} минут
+                  </Typography>
+                  <Typography variant="subtitle2">
                     {item.price} руб.
                   </Typography>
                 </CardContent>
