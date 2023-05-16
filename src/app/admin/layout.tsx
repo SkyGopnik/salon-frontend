@@ -20,10 +20,10 @@ export default function AdminLayout({
   const [render, setRender] = useState(false);
 
   const authorizeUser = () => {
-    // if (user) {
-    //   setRender(true);
-    //   return;
-    // }
+    if (user) {
+      setRender(true);
+      return;
+    }
 
     const token = localStorage.getItem("token");
 
