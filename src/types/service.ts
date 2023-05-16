@@ -3,5 +3,6 @@ export interface Service {
   name: string,
   subName: string,
   description: string,
-  price: string
+  price: string,
+  duration: string
 }
