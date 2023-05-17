@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start:production": "next start -p 8642",
-    "start:development": "next start -p 8641",
+    "start:production": "next start -p 6450",
+    "start:development": "next start -p 6451",
     "eslint": "npx eslint src"
   },
   "dependencies": {
