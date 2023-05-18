@@ -18,7 +18,7 @@ export default function AdminHeader() {
   const logout = () => {
     deleteToken();
 
-    router.push("/");
+    router.push("/login");
   };
 
   return (
