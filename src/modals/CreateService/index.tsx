@@ -44,19 +44,15 @@ export default function CreateServiceModal({ saloonId, data, opened, onClose }: 
 
     const { name, description, price, duration } = form;
 
-    if (!name || !description) {
-      return;
-    }
-
-    if (name.length < 3) {
-      enqueueSnackbar("Название не может быть меньше трех символов", {
+    if (!name) {
+      enqueueSnackbar("Название должно быть заполнена", {
         variant: "error"
       });
       return;
     }
 
-    if (description.length < 3) {
-      enqueueSnackbar("Описание не может быть меньше трех символов", {
+    if (!description) {
+      enqueueSnackbar("Описание должно быть заполнена", {
         variant: "error"
       });
       return;
@@ -71,6 +67,20 @@ export default function CreateServiceModal({ saloonId, data, opened, onClose }: 
 
     if (!duration) {
       enqueueSnackbar("Длительность должна быть заполнена", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (name.length < 3) {
+      enqueueSnackbar("Название не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (description.length < 3) {
+      enqueueSnackbar("Описание не может быть меньше трех символов", {
         variant: "error"
       });
       return;

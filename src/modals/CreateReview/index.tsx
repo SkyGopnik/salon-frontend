@@ -43,11 +43,24 @@ export default function CreateReviewModal({ saloonId, data, opened, onClose }: I
 
     const { firstName, lastName, rating, description } = form;
 
-    if (
-      !firstName
-      || !lastName
-      || !description
-    ) {
+    if (!firstName) {
+      enqueueSnackbar("Имя должно быть заполнена", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (!lastName) {
+      enqueueSnackbar("Фамилия должно быть заполнена", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (!description) {
+      enqueueSnackbar("Описание должно быть заполнена", {
+        variant: "error"
+      });
       return;
     }
 
