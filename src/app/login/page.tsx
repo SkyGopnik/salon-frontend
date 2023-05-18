@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useSnackbar } from "notistack";
 import { useState } from "react";
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
@@ -21,6 +22,7 @@ const theme = createTheme();
 
 export default function SignInPage() {
 
+  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
   const [form, setForm] = useState<{ [key: string]: string }>({
@@ -37,6 +39,7 @@ export default function SignInPage() {
 
     setForm(newForm);
   };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -52,14 +55,39 @@ export default function SignInPage() {
       return;
     }
 
+    if (email.length < 3) {
+      enqueueSnackbar("Почта не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (password.length < 3) {
+      enqueueSnackbar("Пароль не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
     try {
       const { data } = await axios.post("/auth/login", form);
 
       setToken(data.token);
 
       router.push("/admin");
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      const localization: {
+        [key: string]: string
+      } = {
+        "Login or password not valid": "Логин или пароль неверный"
+      };
+
+      const { message } = e.response.data;
+
+      console.log(message);
+      enqueueSnackbar(localization[message] ? localization[message] : message, {
+        variant: "error"
+      });
     }
   };
 

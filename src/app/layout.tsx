@@ -1,4 +1,7 @@
+"use client";
+
 import axios from "axios";
+import { SnackbarProvider } from "notistack";
 import React, { ReactNode } from "react";
 
 import { Providers } from "src/components/Providers";
@@ -11,7 +14,7 @@ import "@fontsource/roboto/700.css";
 
 import "src/style/index.scss";
 
-axios.defaults.baseURL = "http://localhost:6713/";
+axios.defaults.baseURL = "https://api.salonykrasotyonline.ru/";
 
 export default function RootLayout({
   children
@@ -27,7 +30,9 @@ export default function RootLayout({
       <head />
       <body>
         <Providers>
-          {children}
+          <SnackbarProvider maxSnack={3}>
+            {children}
+          </SnackbarProvider>
           <SetupClient />
         </Providers>
       </body>

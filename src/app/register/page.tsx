@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useSnackbar } from "notistack";
 import { useState } from "react";
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
@@ -21,6 +22,7 @@ const theme = createTheme();
 
 export default function SignUp() {
 
+  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
   const [form, setForm] = useState<{ [key: string]: string }>({
@@ -58,14 +60,53 @@ export default function SignUp() {
       return;
     }
 
+    if (firstName.length < 3) {
+      enqueueSnackbar("Имя не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (lastName.length < 3) {
+      enqueueSnackbar("Фамилия не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (email.length < 3) {
+      enqueueSnackbar("Почта не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (password.length < 3) {
+      enqueueSnackbar("Пароль не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
     try {
       const { data } = await axios.post("/auth/register", form);
 
       setToken(data.token);
 
       router.push("/admin");
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      const localization: {
+        [key: string]: string
+      } = {
+        "User already exist": "Пользователь уже существует"
+      };
+
+      const { message } = e.response.data;
+
+      console.log(message);
+      enqueueSnackbar(localization[message] ? localization[message] : message, {
+        variant: "error"
+      });
     }
   };
 

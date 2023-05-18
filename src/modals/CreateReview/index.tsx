@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { Review } from "src/types/review";
 
@@ -17,6 +18,7 @@ interface IProps {
 
 export default function CreateReviewModal({ saloonId, data, opened, onClose }: IProps) {
 
+  const { enqueueSnackbar } = useSnackbar();
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -46,6 +48,27 @@ export default function CreateReviewModal({ saloonId, data, opened, onClose }: I
       || !lastName
       || !description
     ) {
+      return;
+    }
+
+    if (firstName.length < 3) {
+      enqueueSnackbar("Имя не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (lastName.length < 3) {
+      enqueueSnackbar("Фамилия не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (description.length < 3) {
+      enqueueSnackbar("Описание не может быть меньше трех символов", {
+        variant: "error"
+      });
       return;
     }
 

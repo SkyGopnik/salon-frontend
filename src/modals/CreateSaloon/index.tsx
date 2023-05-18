@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { Saloon } from "src/types/saloon";
 
@@ -15,6 +16,7 @@ interface IProps {
 }
 export default function CreateSaloonModal({ data, opened, onClose }: IProps) {
 
+  const { enqueueSnackbar } = useSnackbar();
   const [form, setForm] = useState({
     name: "",
     description: ""
@@ -38,21 +40,42 @@ export default function CreateSaloonModal({ data, opened, onClose }: IProps) {
 
     const { name, description } = form;
 
-    console.log(form);
-
     if (!name || !description) {
       return;
     }
 
-    if (!isEdit) {
-      await axios.post("/saloons", {
-        name,
-        description
+    if (name.length < 3) {
+      enqueueSnackbar("Название не может быть меньше трех символов", {
+        variant: "error"
       });
-    } else  {
-      await axios.put("/saloons/" + data.id, {
-        name,
-        description
+      return;
+    }
+
+    if (description.length < 3) {
+      enqueueSnackbar("Описание не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
+    try {
+      if (!isEdit) {
+        await axios.post("/saloons", {
+          name,
+          description
+        });
+      } else  {
+        await axios.put("/saloons/" + data.id, {
+          name,
+          description
+        });
+      }
+    } catch (e: any) {
+      const { message } = e.response.data;
+
+      console.log(message);
+      enqueueSnackbar(message, {
+        variant: "error"
       });
     }
 

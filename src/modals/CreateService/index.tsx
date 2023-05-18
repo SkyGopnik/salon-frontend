@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { Service } from "src/types/service";
 
@@ -17,6 +18,7 @@ interface IProps {
 
 export default function CreateServiceModal({ saloonId, data, opened, onClose }: IProps) {
 
+  const { enqueueSnackbar } = useSnackbar();
   const [form, setForm] = useState({
     name: "",
     subName: "",
@@ -42,7 +44,35 @@ export default function CreateServiceModal({ saloonId, data, opened, onClose }: 
 
     const { name, description, price, duration } = form;
 
-    if (!name || !description || !price || !duration) {
+    if (!name || !description) {
+      return;
+    }
+
+    if (name.length < 3) {
+      enqueueSnackbar("Название не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (description.length < 3) {
+      enqueueSnackbar("Описание не может быть меньше трех символов", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (!price) {
+      enqueueSnackbar("Цена должна быть заполнена", {
+        variant: "error"
+      });
+      return;
+    }
+
+    if (!duration) {
+      enqueueSnackbar("Длительность должна быть заполнена", {
+        variant: "error"
+      });
       return;
     }
 

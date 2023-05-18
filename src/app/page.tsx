@@ -1,17 +1,16 @@
 "use client";
 
-import React from "react";
-import { Button } from "@mui/material";
-
-import style from "./page.module.scss";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function MainPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/admin");
+  }, []);
+
   return (
-    <div>
-      <div className={style.test}>
-        d
-      </div>
-      <Button variant="contained">Hello World</Button>
-    </div>
+    <div />
   );
 }
