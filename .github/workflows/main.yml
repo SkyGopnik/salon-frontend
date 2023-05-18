@@ -40,4 +40,4 @@ jobs:
             nvm use 16.17.0
             npm i
             npm run build
-            pm2 restart 
+            pm2 restart salonykrasotyonline-web
